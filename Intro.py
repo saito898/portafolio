@@ -1,87 +1,91 @@
 import streamlit as st
 from PIL import Image
-st.title("Aplicaciones de Inteligencia Artificial.")
+st.title("Portafolio Interfaces Multimodales.")
 
 with st.sidebar:
-  st.subheader("Aplicaciones con Inteligencia Artificial.")
+  st.subheader("Salomé Arango")
   parrafo = (
-    "La inteligencia artificial permite mejorar la toma de decisiones con el uso de datos, "
-    "automatizar tareas rutinarias y proporcionar análisis avanzados en tiempo real, lo que "
-    "resulta en una mayor eficiencia y precisión en diversos campos."
+    "a continuación encontraran las paginas que he realizado durante las clases"
   )
   st.write(parrafo)
 
-url_ia="https://sites.google.com/view/aplicacionesdeia/inicio"
-st.subheader("En el siguiente enlace puedes encontrar páginas y ejercicios prácticos")
-st.write(f"Enlace para páginas y ejercicios: [Enlace]({url_ia})")
+
 col1, col2, col3 = st.columns(3)
 
 with col1:
  
- st.subheader("Conversión de texto a voz")
- image = Image.open('txt_to_audio2.png')
+ st.subheader("Analisis de texto")
+ image = Image.open('analisisdetexto.webp')
  st.image(image, width=190)
- st.write("En la siguiente enlace usaremos una de las aplicaciones de Inteligencia Artificial") 
- url = "https://imultimod.streamlit.app/"
- st.write(f"Texto a voz: [Enlace]({url})")
+ st.write("con la siguiente pagina se realiza un análisis del texto que se le ingrese") 
+ url = "https://textico.streamlit.app/"
+ st.write(f"texto [Enlace]({url})")
 
  st.subheader("Reconocimiento de Objetos")
- image = Image.open('txt_to_audio.png')
+ image = Image.open('imagenanime.jfif')
  st.image(image, width=200)
  st.write("En la siguiente enlace veremos como se detectan objetos en Imágenes.") 
- url = "https://yolov5cmc.streamlit.app/"
- st.write(f"YOLO: [Enlace]({url})")
+ url = "https://detector-de-imagenes-3.streamlit.app/"
+ st.write(f"reconocimiento [Enlace]({url})")
 
- st.subheader("Entrenando Modelos")
- image = Image.open('OIG5.jpg')
+ st.subheader("primera pagina")
+ image = Image.open('peachygoma.png')
  st.image(image, width=200)
- st.write("En la siguiente enlace veremos como puedes usar tu modelo entrenado.") 
- url = "https://xn3pg24ztuv6fdiqon8qn3.streamlit.app/"
- st.write(f"YOLO: [Enlace]({url})")
+ st.write("en la siguiente pagina, veremos el primer acercamiento que tuve con github y streamlit") 
+ url = "https://interfaces-multimodales1-primera-app.streamlit.app/"
+ st.write(f"primera pagina: [Enlace]({url})")
+
+ st.subheader("traductor de carteles")
+ image = Image.open('chibipaises.jfif')
+ st.image(image, width=200)
+ st.write("la siguiente pagina es un traductor de imagenes, perfecto por si eres extrangero en un pais con otro idioma.") 
+ url = "https://interfaces-multimodales1-primera-app.streamlit.app/"
+ st.write(f"carteles: [Enlace]({url})")
+
 
 with col2: 
- st.subheader("Conversión de voz a texto")
- image = Image.open('OIG8.jpg')
+ st.subheader("reconocimiento óptico de caracteres")
+ image = Image.open('ocr.webp')
  st.image(image, width=200)
- st.write("En la siguiente veremos una aplicación que usa la conversión de voz a texto.") 
- url = "https://traductorw.streamlit.app/"
- st.write(f"Voz a texto: [Enlace]({url})")
+ st.write("En la siguiente veremos una aplicación que convierte los textos de imagenes a texto.") 
+ url = "https://lectorimagenes-salito.streamlit.app/"
+ st.write(f" OCR: [Enlace]({url})")
 
- st.subheader("Análisis de texto")
- image = Image.open('data_analisis.png')
+ st.subheader("reconocmientos de imagenes")
+ image = Image.open('animetech.avif')
  st.image(image, width=190)
- st.write("En la siguiente enlace veremos como se pueden analizar textos usando agentes.") 
- url = "https://textico.streamlit.app/"
- st.write(f"Datos: [Enlace]({url})")
+ st.write("En la siguiente enlace veremos como se pueden analizar imagenes usando agentes de teachable machine.") 
+ url = "https://modelo-detector-personas.streamlit.app/"
+ st.write(f"agente [Enlace]({url})")
 
- st.subheader("Trasnscriptor Audio y Video")
- image = Image.open('OIG3.jpg')
+ st.subheader("nube de palabras")
+ image = Image.open('nubedepalabras.jpg')
  st.image(image, width=200)
- st.write("En la siguiente enlace veremos como realizamos transcripciones de audio/video.") 
- url = "https://transcript-whisper.streamlit.app/"
- st.write(f"Transcriptor: [Enlace]({url})")
+ st.write("En la siguiente enlace veremos como tomar un texto y convertirlo en una nube de palabras") 
+ url = "https://nubecitadepalabras.streamlit.app/"
+ st.write(f"nube: [Enlace]({url})")
 
 
 with col3: 
- st.subheader("Generación en Contexto")
- image = Image.open('Chat_pdf.png')
+ st.subheader("Texto a Audio")
+ image = Image.open('fabula.jfif')
  st.image(image, width=190)
- st.write("En la siguiente veremos una aplicación que usa RAG a partir de un documento (PDF).") 
- url = "https://chatpdf-cc.streamlit.app/"
- st.write(f"RAG: [Enlace]({url})")
+ st.write("En la siguiente veremos una aplicación que convierte el texto en audio, con un enfoque infantil, para convertir cuentos") 
+ url = "https://pagina2-experimento.streamlit.app/"
+ st.write(f"cuentos: [Enlace]({url})")
 
- st.subheader("Análisis de Imagen")
- image = Image.open('OIG4.jpg')
+ st.subheader("Análisis de sentimiento")
+ image = Image.open('emojis.avif')
  st.image(image, width=200)
- st.write("En la siguiente enlace veremos la capacidad de análisis en Imágenes.") 
- url = "https://vision2-gpt4o.streamlit.app/"
- st.write(f"Vision: [Enlace]({url})")
+ st.write("la siguiente pagina ánaliza las emociones que se ingresan, segun la polaridad") 
+ url = "https://sentimentalismo-gifs.streamlit.app/"
+ st.write(f"sentimientos: [Enlace]({url})")
  
- st.subheader("Sistema Ciberfísico")
- image = Image.open('OIG6.jpg')
+ st.subheader("traductor")
+ image = Image.open('duolingo.png')
  st.image(image, width=200)
- st.write("En la siguiente enlace veremos la capacidad de interacción con el mundo físico.") 
- url = "https://vision2-gpt4o.streamlit.app/"
- st.write(f"Vision: [Enlace]({url})")
+ st.write("Esta pagina traduce el audio que se le ingrese") 
+ url = "https://traductorcito-de-idiomas.streamlit.app/"
+ st.write(f"traductorcito: [Enlace]({url})")
 
 
