@@ -1,14 +1,5 @@
-import os
 import streamlit as st
-from bokeh.models.widgets import Button
-from bokeh.models import CustomJS
-from streamlit_bokeh_events import streamlit_bokeh_events
 from PIL import Image
-import time
-import glob
-
-from gtts import gTTS
-from googletrans import Translator
 
 
 # ============================================================
@@ -16,10 +7,9 @@ from googletrans import Translator
 # ============================================================
 
 st.set_page_config(
-    page_title="Traductorcito 🌸",
-    page_icon="🌸",
-    layout="wide",
-    initial_sidebar_state="expanded"
+    page_title="Portafolio de Interfaces Multimodales",
+    page_icon="🎀",
+    layout="wide"
 )
 
 
@@ -38,41 +28,34 @@ st.markdown("""
    ============================================================ */
 
 :root {
-    --rosa: #EFA7B5;
-    --rosa-claro: #FBE3E8;
-    --rosa-suave: #FFF3F5;
-
-    --verde: #8EAF91;
-    --verde-claro: #E5F0E5;
-    --verde-suave: #F3F8F2;
-
-    --crema: #FFFDFC;
-
-    --texto: #3F4540;
-    --gris: #737873;
-
-    --borde-rosa: #F0C8D0;
-    --borde-verde: #C8DCC9;
+    --rosa-principal: #D9899B;
+    --rosa-oscuro: #A95F72;
+    --rosa-claro: #F9E4E9;
+    --rosa-suave: #FFF5F7;
+    --rosa-borde: #EBC3CC;
+    --texto: #4A3D42;
+    --gris-rosa: #786A6F;
+    --blanco: #FFFFFF;
 }
 
 
 /* ============================================================
-   FONDO GENERAL
+   FONDO
    ============================================================ */
 
 .stApp {
     background:
         radial-gradient(
             circle at 10% 10%,
-            #FBE3E8 0%,
+            #FBE8ED 0%,
             transparent 25%
         ),
         radial-gradient(
             circle at 90% 20%,
-            #E5F0E5 0%,
+            #F9E1E7 0%,
             transparent 25%
         ),
-        #FFFDFC;
+        #FFF8FA;
 
     font-family: 'Quicksand', sans-serif;
     color: var(--texto);
@@ -80,49 +63,9 @@ st.markdown("""
 
 
 .block-container {
-    max-width: 1200px;
+    max-width: 1250px;
     padding-top: 2rem;
     padding-bottom: 3rem;
-}
-
-
-/* ============================================================
-   SIDEBAR
-   ============================================================ */
-
-section[data-testid="stSidebar"] {
-    background:
-        linear-gradient(
-            180deg,
-            #FBE3E8 0%,
-            #F5E9EA 45%,
-            #E5F0E5 100%
-        );
-
-    border-right: 3px solid #E7C7CE;
-}
-
-
-/* TODOS LOS TEXTOS DEL SIDEBAR */
-
-section[data-testid="stSidebar"] *,
-section[data-testid="stSidebar"] p,
-section[data-testid="stSidebar"] span,
-section[data-testid="stSidebar"] label,
-section[data-testid="stSidebar"] h1,
-section[data-testid="stSidebar"] h2,
-section[data-testid="stSidebar"] h3,
-section[data-testid="stSidebar"] h4,
-section[data-testid="stSidebar"] [data-testid="stMarkdownContainer"] * {
-    color: #303530 !important;
-}
-
-
-section[data-testid="stSidebar"] h1,
-section[data-testid="stSidebar"] h2,
-section[data-testid="stSidebar"] h3 {
-    font-family: 'Quicksand', sans-serif !important;
-    font-weight: 700 !important;
 }
 
 
@@ -135,226 +78,151 @@ h2,
 h3,
 h4 {
     font-family: 'Quicksand', sans-serif !important;
-    color: #3F4540 !important;
+    color: var(--texto) !important;
 }
 
 
-.main-title {
+.portfolio-title {
     text-align: center;
-    font-size: 3.7rem;
+
+    font-size: 3.4rem;
+
     font-weight: 700;
 
-    color: #B96F80;
+    color: #A95F72;
 
-    margin-bottom: 0.2rem;
+    margin-bottom: 0.3rem;
 }
 
 
-.main-subtitle {
+.portfolio-subtitle {
     text-align: center;
-    font-size: 1.25rem;
-    font-weight: 500;
 
-    color: #6E786F;
+    font-size: 1.15rem;
 
-    margin-bottom: 2rem;
-}
-
-
-/* ============================================================
-   TARJETAS
-   ============================================================ */
-
-.card {
-    background: rgba(255,255,255,0.92);
-
-    border-radius: 25px;
-
-    padding: 1.8rem;
-
-    border: 2px solid #F0DADF;
-
-    box-shadow:
-        0 10px 30px rgba(80, 70, 70, 0.08);
-
-    margin-bottom: 1.5rem;
-}
-
-
-.card-green {
-    background: #F5F9F4;
-
-    border: 2px solid #D5E4D5;
-
-    border-radius: 25px;
-
-    padding: 1.8rem;
-
-    box-shadow:
-        0 10px 30px rgba(80, 100, 80, 0.07);
-
-    margin-bottom: 1.5rem;
-}
-
-
-/* ============================================================
-   IMAGEN
-   ============================================================ */
-
-.image-box {
-    background: #FFFFFF;
-
-    padding: 1rem;
-
-    border-radius: 25px;
-
-    border: 2px solid #F0DADF;
-
-    box-shadow:
-        0 8px 25px rgba(80, 70, 70, 0.08);
+    color: #786A6F;
 
     margin-bottom: 2rem;
 }
 
 
 /* ============================================================
-   BOTÓN BOKEH
+   SIDEBAR
    ============================================================ */
 
-.bk-btn {
-    border-radius: 18px !important;
+section[data-testid="stSidebar"] {
+
+    background:
+        linear-gradient(
+            180deg,
+            #F9E4E9 0%,
+            #FFF0F3 55%,
+            #F5DDE3 100%
+        );
+
+    border-right: 2px solid #EBC3CC;
 }
 
 
-/* ============================================================
-   BOTONES STREAMLIT
-   ============================================================ */
+section[data-testid="stSidebar"] *,
+section[data-testid="stSidebar"] p,
+section[data-testid="stSidebar"] span,
+section[data-testid="stSidebar"] h1,
+section[data-testid="stSidebar"] h2,
+section[data-testid="stSidebar"] h3,
+section[data-testid="stSidebar"] h4,
+section[data-testid="stSidebar"] [data-testid="stMarkdownContainer"] * {
 
-.stButton > button {
-    background: linear-gradient(
-        135deg,
-        #D98E9F,
-        #BFA7A0
-    ) !important;
+    color: #4A3D42 !important;
 
-    color: white !important;
+}
 
-    border: none !important;
 
-    border-radius: 16px !important;
-
-    font-family: 'Quicksand', sans-serif !important;
-
-    font-size: 1.05rem !important;
+section[data-testid="stSidebar"] h2,
+section[data-testid="stSidebar"] h3 {
 
     font-weight: 700 !important;
 
-    padding: 0.7rem 1.5rem !important;
+}
+
+
+/* ============================================================
+   TARJETAS DE PROYECTOS
+   ============================================================ */
+
+.project-card {
+
+    background: rgba(255,255,255,0.90);
+
+    border: 2px solid #F0D5DB;
+
+    border-radius: 22px;
+
+    padding: 1.3rem;
+
+    margin-bottom: 1.5rem;
 
     box-shadow:
-        0 5px 0 #B97888;
+        0 8px 25px rgba(170, 100, 120, 0.08);
 
     transition: 0.2s ease;
+
 }
 
 
-.stButton > button:hover {
-    transform: translateY(-2px);
+.project-card:hover {
+
+    border-color: #D9899B;
 
     box-shadow:
-        0 7px 0 #B97888;
-}
+        0 10px 30px rgba(170, 100, 120, 0.14);
 
-
-.stButton > button:active {
-    transform: translateY(3px);
-
-    box-shadow:
-        0 2px 0 #B97888;
 }
 
 
 /* ============================================================
-   SELECTBOX
+   SUBTÍTULOS DE PROYECTOS
    ============================================================ */
 
-div[data-baseweb="select"] > div {
-    background: #FFFFFF !important;
+.stSubheader {
 
-    border: 2px solid #D5E2D5 !important;
+    color: #A95F72 !important;
 
-    border-radius: 14px !important;
-
-    color: #3F4540 !important;
-}
-
-
-div[data-baseweb="select"] * {
-    color: #3F4540 !important;
 }
 
 
 /* ============================================================
-   CHECKBOX
+   IMÁGENES
    ============================================================ */
 
-.stCheckbox label {
-    color: #4D554E !important;
+[data-testid="stImage"] {
 
-    font-weight: 600 !important;
+    border-radius: 18px;
+
 }
 
 
 /* ============================================================
-   AUDIO
+   ENLACES
    ============================================================ */
 
-audio {
-    width: 100%;
+a {
 
-    border-radius: 15px;
-}
-
-
-/* ============================================================
-   TEXTO DE RESULTADO
-   ============================================================ */
-
-.output-text {
-    background: #FFF7F8;
-
-    border-left: 5px solid #D98E9F;
-
-    border-radius: 15px;
-
-    padding: 1.2rem;
-
-    color: #4A4F4B;
-
-    margin-top: 1rem;
-}
-
-
-/* ============================================================
-   ETIQUETAS
-   ============================================================ */
-
-.section-label {
-    display: inline-block;
-
-    background: #E5F0E5;
-
-    color: #617563;
-
-    padding: 0.4rem 0.9rem;
-
-    border-radius: 20px;
-
-    font-size: 0.9rem;
+    color: #B9687D !important;
 
     font-weight: 700;
 
-    margin-bottom: 0.7rem;
+    text-decoration: none;
+
+}
+
+
+a:hover {
+
+    color: #8F4F61 !important;
+
+    text-decoration: underline;
+
 }
 
 
@@ -363,11 +231,24 @@ audio {
    ============================================================ */
 
 hr {
+
     border: none;
 
-    border-top: 2px dashed #E5D5D8;
+    border-top: 2px dashed #EBC3CC;
 
     margin: 2rem 0;
+
+}
+
+
+/* ============================================================
+   COLUMNAS
+   ============================================================ */
+
+[data-testid="column"] {
+
+    padding: 0.4rem;
+
 }
 
 
@@ -376,7 +257,9 @@ hr {
    ============================================================ */
 
 div[data-testid="stAlert"] {
-    border-radius: 16px;
+
+    border-radius: 15px;
+
 }
 
 
@@ -386,17 +269,16 @@ div[data-testid="stAlert"] {
 
 @media (max-width: 768px) {
 
-    .main-title {
-        font-size: 2.6rem;
+    .portfolio-title {
+
+        font-size: 2.5rem;
+
     }
 
-    .main-subtitle {
+    .portfolio-subtitle {
+
         font-size: 1rem;
-    }
 
-    .card,
-    .card-green {
-        padding: 1.2rem;
     }
 
 }
@@ -406,10 +288,94 @@ div[data-testid="stAlert"] {
 
 
 # ============================================================
-# CARPETA TEMPORAL
+# CONFETI AL CARGAR LA PÁGINA
 # ============================================================
 
-os.makedirs("temp", exist_ok=True)
+st.markdown("""
+<script>
+setTimeout(function() {
+
+    const emojis = ["🎀", "🌸", "💗", "✨", "🌷", "💕"];
+
+    for (let i = 0; i < 45; i++) {
+
+        const confetti = document.createElement("div");
+
+        confetti.innerHTML =
+            emojis[Math.floor(Math.random() * emojis.length)];
+
+        confetti.style.position = "fixed";
+        confetti.style.left = Math.random() * 100 + "vw";
+        confetti.style.top = "-30px";
+        confetti.style.fontSize =
+            (15 + Math.random() * 18) + "px";
+
+        confetti.style.zIndex = "9999";
+
+        confetti.style.pointerEvents = "none";
+
+        confetti.style.animation =
+            "fall " +
+            (2 + Math.random() * 3) +
+            "s linear forwards";
+
+        document.body.appendChild(confetti);
+
+        setTimeout(function() {
+            confetti.remove();
+        }, 5500);
+    }
+
+}, 300);
+
+
+const style = document.createElement("style");
+
+style.innerHTML = `
+@keyframes fall {
+
+    0% {
+        transform:
+            translateY(0)
+            rotate(0deg);
+
+        opacity: 1;
+    }
+
+    100% {
+        transform:
+            translateY(110vh)
+            rotate(360deg);
+
+        opacity: 0;
+    }
+
+}
+`;
+
+document.head.appendChild(style);
+
+</script>
+""", unsafe_allow_html=True)
+
+
+# ============================================================
+# TÍTULO PRINCIPAL
+# ============================================================
+
+st.markdown(
+    '<div class="portfolio-title">'
+    '🎀 Portafolio de Interfaces Multimodales'
+    '</div>',
+    unsafe_allow_html=True
+)
+
+st.markdown(
+    '<div class="portfolio-subtitle">'
+    'Una colección de proyectos desarrollados durante las clases ✨'
+    '</div>',
+    unsafe_allow_html=True
+)
 
 
 # ============================================================
@@ -418,655 +384,334 @@ os.makedirs("temp", exist_ok=True)
 
 with st.sidebar:
 
-    st.title("🌸 Traductorcito")
+    st.subheader("🎀 Salomé Arango")
 
     st.write(
-        "Habla, elige los idiomas y deja que Traductorcito "
-        "haga la magia. 🌿"
+        "A continuación encontrarán las páginas que he "
+        "realizado durante las clases."
     )
 
-    st.divider()
 
-    st.subheader("🎙️ ¿Cómo funciona?")
+# ============================================================
+# COLUMNAS
+# ============================================================
+
+col1, col2, col3 = st.columns(3)
+
+
+# ============================================================
+# COLUMNA 1
+# ============================================================
+
+with col1:
+
+    # --------------------------------------------------------
+    # ANÁLISIS DE TEXTO
+    # --------------------------------------------------------
+
+    st.subheader("Análisis de texto")
+
+    image = Image.open(
+        "analisisdetexto.webp"
+    )
+
+    st.image(
+        image,
+        width=190
+    )
 
     st.write(
-        "1. Presiona **Escuchar**."
+        "Con la siguiente página se realiza un análisis "
+        "del texto que se le ingrese."
+    )
+
+    url = "https://textico.streamlit.app/"
+
+    st.write(
+        f"Texto [Enlace]({url})"
+    )
+
+
+    # --------------------------------------------------------
+    # RECONOCIMIENTO DE OBJETOS
+    # --------------------------------------------------------
+
+    st.subheader("Reconocimiento de objetos")
+
+    image = Image.open(
+        "imagenanime.jfif"
+    )
+
+    st.image(
+        image,
+        width=200
     )
 
     st.write(
-        "2. Cuando escuches la señal, habla."
+        "En el siguiente enlace veremos cómo se detectan "
+        "objetos en imágenes."
+    )
+
+    url = (
+        "https://detector-de-imagenes-3.streamlit.app/"
     )
 
     st.write(
-        "3. Selecciona el idioma de entrada."
+        f"Reconocimiento [Enlace]({url})"
+    )
+
+
+    # --------------------------------------------------------
+    # PRIMERA PÁGINA
+    # --------------------------------------------------------
+
+    st.subheader("Primera página")
+
+    image = Image.open(
+        "peachygoma.png"
+    )
+
+    st.image(
+        image,
+        width=200
     )
 
     st.write(
-        "4. Selecciona el idioma de salida."
+        "En la siguiente página veremos el primer "
+        "acercamiento que tuve con GitHub y Streamlit."
+    )
+
+    url = (
+        "https://interfaces-multimodales1-primera-app.streamlit.app/"
     )
 
     st.write(
-        "5. Presiona **Convertir**."
+        f"Primera página: [Enlace]({url})"
+    )
+
+
+    # --------------------------------------------------------
+    # TRADUCTOR DE CARTELES
+    # --------------------------------------------------------
+
+    st.subheader("Traductor de carteles")
+
+    image = Image.open(
+        "chibipaises.jfif"
+    )
+
+    st.image(
+        image,
+        width=200
+    )
+
+    st.write(
+        "La siguiente página es un traductor de imágenes, "
+        "perfecto si eres extranjero en un país con otro idioma."
+    )
+
+    url = (
+        "https://interfaces-multimodales1-primera-app.streamlit.app/"
+    )
+
+    st.write(
+        f"Carteles: [Enlace]({url})"
     )
 
 
 # ============================================================
-# ENCABEZADO
+# COLUMNA 2
 # ============================================================
 
-st.markdown(
-    '<div class="main-title">'
-    '🌸 TRADUCTORCITO'
-    '</div>',
-    unsafe_allow_html=True
-)
+with col2:
 
+    # --------------------------------------------------------
+    # RECONOCIMIENTO ÓPTICO DE CARACTERES
+    # --------------------------------------------------------
 
-st.markdown(
-    '<div class="main-subtitle">'
-    'Escucho lo que quieres traducir 🌿'
-    '</div>',
-    unsafe_allow_html=True
-)
-
-
-# ============================================================
-# IMAGEN
-# ============================================================
-
-try:
-
-    image = Image.open("duolingo.png")
-
-    st.markdown(
-        '<div class="image-box">',
-        unsafe_allow_html=True
+    st.subheader(
+        "Reconocimiento óptico de caracteres"
     )
 
-    col1, col2, col3 = st.columns(
-        [1, 2, 1]
+    image = Image.open(
+        "ocr.webp"
     )
 
-    with col2:
-
-        st.image(
-            image,
-            use_container_width=True
-        )
-
-    st.markdown(
-        '</div>',
-        unsafe_allow_html=True
+    st.image(
+        image,
+        width=200
     )
 
-except FileNotFoundError:
+    st.write(
+        "En la siguiente página veremos una aplicación "
+        "que convierte los textos de imágenes a texto."
+    )
 
-    st.warning(
-        "No se encontró la imagen 'duolingo.png'."
+    url = (
+        "https://lectorimagenes-salito.streamlit.app/"
+    )
+
+    st.write(
+        f"OCR: [Enlace]({url})"
     )
 
 
-# ============================================================
-# INSTRUCCIÓN
-# ============================================================
-
-st.markdown(
-    '<div class="card">',
-    unsafe_allow_html=True
-)
-
-st.markdown(
-    '<div class="section-label">'
-    '🎤 Reconocimiento de voz'
-    '</div>',
-    unsafe_allow_html=True
-)
-
-st.subheader(
-    "Toca el botón y habla"
-)
-
-st.write(
-    "Presiona el botón y espera la señal. "
-    "Cuando esté escuchando, di la frase que quieres traducir."
-)
-
-st.markdown(
-    '</div>',
-    unsafe_allow_html=True
-)
-
-
-# ============================================================
-# BOTÓN DE RECONOCIMIENTO DE VOZ
-# ============================================================
-
-stt_button = Button(
-    label="🎤  Escuchar",
-    width=300,
-    height=50
-)
-
-
-stt_button.js_on_event(
-    "button_click",
-    CustomJS(code="""
-
-        var recognition = new webkitSpeechRecognition();
-
-        recognition.continuous = false;
-
-        recognition.interimResults = true;
-
-        recognition.lang = 'es-ES';
-
-
-        recognition.onresult = function (e) {
-
-            var value = "";
-
-            for (
-                var i = e.resultIndex;
-                i < e.results.length;
-                ++i
-            ) {
-
-                if (e.results[i].isFinal) {
-
-                    value += e.results[i][0].transcript;
-
-                }
-
-            }
-
-
-            if (value != "") {
-
-                document.dispatchEvent(
-                    new CustomEvent(
-                        "GET_TEXT",
-                        {
-                            detail: value
-                        }
-                    )
-                );
-
-            }
-
-        };
-
-
-        recognition.onend = function() {
-
-            console.log(
-                "Reconocimiento detenido"
-            );
-
-        };
-
-
-        recognition.start();
-
-    """)
-)
-
-
-# ============================================================
-# RESULTADO DEL RECONOCIMIENTO
-# ============================================================
-
-result = streamlit_bokeh_events(
-    stt_button,
-
-    events="GET_TEXT",
-
-    key="listen",
-
-    refresh_on_update=False,
-
-    override_height=75,
-
-    debounce_time=0
-)
-
-
-# ============================================================
-# PROCESAR TEXTO
-# ============================================================
-
-if result:
-
-    if "GET_TEXT" in result:
-
-        text = str(
-            result.get("GET_TEXT")
-        )
-
-        # ====================================================
-        # TEXTO DETECTADO
-        # ====================================================
-
-        st.markdown(
-            '<div class="card-green">',
-            unsafe_allow_html=True
-        )
-
-        st.markdown(
-            '<div class="section-label">'
-            '💬 Texto detectado'
-            '</div>',
-            unsafe_allow_html=True
-        )
-
-        st.write(
-            text
-        )
-
-        st.markdown(
-            '</div>',
-            unsafe_allow_html=True
-        )
-
-
-        # ====================================================
-        # TRADUCTOR
-        # ====================================================
-
-        translator = Translator()
-
-
-        st.markdown(
-            '<div class="card">',
-            unsafe_allow_html=True
-        )
-
-        st.markdown(
-            '<div class="section-label">'
-            '🌎 Configuración'
-            '</div>',
-            unsafe_allow_html=True
-        )
-
-
-        st.subheader(
-            "Elige los idiomas"
-        )
-
-
-        # ====================================================
-        # IDIOMA DE ENTRADA
-        # ====================================================
-
-        in_lang = st.selectbox(
-
-            "Idioma de entrada",
-
-            (
-                "Inglés",
-                "Español",
-                "Bengali",
-                "Coreano",
-                "Mandarín",
-                "Japonés"
-            )
-
-        )
-
-
-        if in_lang == "Inglés":
-
-            input_language = "en"
-
-        elif in_lang == "Español":
-
-            input_language = "es"
-
-        elif in_lang == "Bengali":
-
-            input_language = "bn"
-
-        elif in_lang == "Coreano":
-
-            input_language = "ko"
-
-        elif in_lang == "Mandarín":
-
-            input_language = "zh-cn"
-
-        elif in_lang == "Japonés":
-
-            input_language = "ja"
-
-
-        # ====================================================
-        # IDIOMA DE SALIDA
-        # ====================================================
-
-        out_lang = st.selectbox(
-
-            "Idioma de salida",
-
-            (
-                "Inglés",
-                "Español",
-                "Bengali",
-                "Coreano",
-                "Mandarín",
-                "Japonés",
-                "Ruso"
-            )
-
-        )
-
-
-        if out_lang == "Inglés":
-
-            output_language = "en"
-
-        elif out_lang == "Español":
-
-            output_language = "es"
-
-        elif out_lang == "Bengali":
-
-            output_language = "bn"
-
-        elif out_lang == "Coreano":
-
-            output_language = "ko"
-
-        elif out_lang == "Mandarín":
-
-            output_language = "zh-cn"
-
-        elif out_lang == "Japonés":
-
-            output_language = "ja"
-
-        elif out_lang == "Ruso":
-
-            output_language = "ru"
-
-
-        # ====================================================
-        # ACENTO
-        # ====================================================
-
-        english_accent = st.selectbox(
-
-            "Acento",
-
-            (
-                "Defecto",
-                "Español",
-                "Reino Unido",
-                "Estados Unidos",
-                "Canada",
-                "Australia",
-                "Irlanda",
-                "Sudáfrica"
-            )
-
-        )
-
-
-        if english_accent == "Defecto":
-
-            tld = "com"
-
-        elif english_accent == "Español":
-
-            tld = "com.mx"
-
-        elif english_accent == "Reino Unido":
-
-            tld = "co.uk"
-
-        elif english_accent == "Estados Unidos":
-
-            tld = "com"
-
-        elif english_accent == "Canada":
-
-            tld = "ca"
-
-        elif english_accent == "Australia":
-
-            tld = "com.au"
-
-        elif english_accent == "Irlanda":
-
-            tld = "ie"
-
-        elif english_accent == "Sudáfrica":
-
-            tld = "co.za"
-
-
-        st.markdown(
-            '</div>',
-            unsafe_allow_html=True
-        )
-
-
-        # ====================================================
-        # FUNCIÓN TEXT TO SPEECH
-        # ====================================================
-
-        def text_to_speech(
-            input_language,
-            output_language,
-            text,
-            tld
-        ):
-
-            translation = translator.translate(
-                text,
-                src=input_language,
-                dest=output_language
-            )
-
-            trans_text = translation.text
-
-
-            tts = gTTS(
-                trans_text,
-                lang=output_language,
-                tld=tld,
-                slow=False
-            )
-
-
-            try:
-
-                my_file_name = text[0:20]
-
-            except:
-
-                my_file_name = "audio"
-
-
-            # Evitar caracteres problemáticos
-            my_file_name = "".join(
-                c for c in my_file_name
-                if c.isalnum() or c in (" ", "_", "-")
-            )
-
-
-            if not my_file_name:
-
-                my_file_name = "audio"
-
-
-            archivo = (
-                f"temp/{my_file_name}.mp3"
-            )
-
-
-            tts.save(archivo)
-
-
-            return my_file_name, trans_text
-
-
-        # ====================================================
-        # MOSTRAR TEXTO
-        # ====================================================
-
-        display_output_text = st.checkbox(
-            "Mostrar el texto traducido"
-        )
-
-
-        # ====================================================
-        # BOTÓN CONVERTIR
-        # ====================================================
-
-        st.markdown(
-            '<div style="margin-top: 1rem;">',
-            unsafe_allow_html=True
-        )
-
-
-        if st.button(
-            "🌿 Convertir",
-            use_container_width=True
-        ):
-
-            try:
-
-                with st.spinner(
-                    "🌸 Preparando tu traducción..."
-                ):
-
-                    result_name, output_text = (
-                        text_to_speech(
-                            input_language,
-                            output_language,
-                            text,
-                            tld
-                        )
-                    )
-
-
-                # ============================================
-                # AUDIO
-                # ============================================
-
-                audio_path = (
-                    f"temp/{result_name}.mp3"
-                )
-
-
-                with open(
-                    audio_path,
-                    "rb"
-                ) as audio_file:
-
-                    audio_bytes = audio_file.read()
-
-
-                st.success(
-                    "✨ ¡Traducción lista!"
-                )
-
-
-                st.markdown(
-                    '<div class="card-green">',
-                    unsafe_allow_html=True
-                )
-
-
-                st.subheader(
-                    "🎧 Tu audio"
-                )
-
-
-                st.audio(
-                    audio_bytes,
-                    format="audio/mp3",
-                    start_time=0
-                )
-
-
-                st.markdown(
-                    '</div>',
-                    unsafe_allow_html=True
-                )
-
-
-                # ============================================
-                # TEXTO DE SALIDA
-                # ============================================
-
-                if display_output_text:
-
-                    st.markdown(
-                        '<div class="output-text">',
-                        unsafe_allow_html=True
-                    )
-
-
-                    st.subheader(
-                        "💬 Texto traducido"
-                    )
-
-
-                    st.write(
-                        output_text
-                    )
-
-
-                    st.markdown(
-                        '</div>',
-                        unsafe_allow_html=True
-                    )
-
-
-            except Exception as e:
-
-                st.error(
-                    f"😿 No fue posible realizar la traducción: {e}"
-                )
-
-
-        st.markdown(
-            '</div>',
-            unsafe_allow_html=True
-        )
-
-
-# ============================================================
-# LIMPIAR ARCHIVOS ANTIGUOS
-# ============================================================
-
-def remove_files(days):
-
-    mp3_files = glob.glob(
-        "temp/*mp3"
+    # --------------------------------------------------------
+    # RECONOCIMIENTO DE IMÁGENES
+    # --------------------------------------------------------
+
+    st.subheader(
+        "Reconocimiento de imágenes"
+    )
+
+    image = Image.open(
+        "animetech.avif"
+    )
+
+    st.image(
+        image,
+        width=190
+    )
+
+    st.write(
+        "En el siguiente enlace veremos cómo se pueden "
+        "analizar imágenes usando agentes de Teachable Machine."
+    )
+
+    url = (
+        "https://modelo-detector-personas.streamlit.app/"
+    )
+
+    st.write(
+        f"Agente: [Enlace]({url})"
     )
 
 
-    if len(mp3_files) != 0:
+    # --------------------------------------------------------
+    # NUBE DE PALABRAS
+    # --------------------------------------------------------
 
-        now = time.time()
+    st.subheader(
+        "Nube de palabras"
+    )
 
-        seconds = days * 86400
+    image = Image.open(
+        "nubedepalabras.jpg"
+    )
+
+    st.image(
+        image,
+        width=200
+    )
+
+    st.write(
+        "En el siguiente enlace veremos cómo tomar un texto "
+        "y convertirlo en una nube de palabras."
+    )
+
+    url = (
+        "https://nubecitadepalabras.streamlit.app/"
+    )
+
+    st.write(
+        f"Nube: [Enlace]({url})"
+    )
 
 
-        for f in mp3_files:
+# ============================================================
+# COLUMNA 3
+# ============================================================
 
-            try:
+with col3:
 
-                if os.stat(f).st_mtime < (
-                    now - seconds
-                ):
+    # --------------------------------------------------------
+    # TEXTO A AUDIO
+    # --------------------------------------------------------
 
-                    os.remove(f)
+    st.subheader(
+        "Texto a audio"
+    )
 
-            except:
+    image = Image.open(
+        "fabula.jfif"
+    )
 
-                pass
+    st.image(
+        image,
+        width=190
+    )
+
+    st.write(
+        "En la siguiente página veremos una aplicación "
+        "que convierte el texto en audio, con un enfoque "
+        "infantil para convertir cuentos."
+    )
+
+    url = (
+        "https://pagina2-experimento.streamlit.app/"
+    )
+
+    st.write(
+        f"Cuentos: [Enlace]({url})"
+    )
 
 
-remove_files(7)
+    # --------------------------------------------------------
+    # ANÁLISIS DE SENTIMIENTO
+    # --------------------------------------------------------
+
+    st.subheader(
+        "Análisis de sentimiento"
+    )
+
+    image = Image.open(
+        "emojis.avif"
+    )
+
+    st.image(
+        image,
+        width=200
+    )
+
+    st.write(
+        "La siguiente página analiza las emociones que se "
+        "ingresan según la polaridad."
+    )
+
+    url = (
+        "https://sentimentalismo-gifs.streamlit.app/"
+    )
+
+    st.write(
+        f"Sentimientos: [Enlace]({url})"
+    )
+
+
+    # --------------------------------------------------------
+    # TRADUCTOR
+    # --------------------------------------------------------
+
+    st.subheader(
+        "Traductor"
+    )
+
+    image = Image.open(
+        "duolingo.png"
+    )
+
+    st.image(
+        image,
+        width=200
+    )
+
+    st.write(
+        "Esta página traduce el audio que se le ingrese."
+    )
+
+    url = (
+        "https://traductorcito-de-idiomas.streamlit.app/"
+    )
+
+    st.write(
+        f"Traductorcito: [Enlace]({url})"
+    )
