@@ -1,579 +1,1072 @@
-import streamlit as st
-from PIL import Image
 import os
-import random
+import streamlit as st
+from bokeh.models.widgets import Button
+from bokeh.models import CustomJS
+from streamlit_bokeh_events import streamlit_bokeh_events
+from PIL import Image
+import time
+import glob
 
-# ---------------------------------------------------------
-# CONFIGURACIÓN DE LA PÁGINA
-# ---------------------------------------------------------
+from gtts import gTTS
+from googletrans import Translator
+
+
+# ============================================================
+# CONFIGURACIÓN
+# ============================================================
 
 st.set_page_config(
-    page_title="Portafolio de Interfaces Multimodales",
-    page_icon="🎀",
-    layout="wide"
+    page_title="Traductorcito 🌸",
+    page_icon="🌸",
+    layout="wide",
+    initial_sidebar_state="expanded"
 )
 
-# ---------------------------------------------------------
-# ESTILO GENERAL
-# ---------------------------------------------------------
+
+# ============================================================
+# ESTILOS
+# ============================================================
 
 st.markdown("""
 <style>
 
 @import url('https://fonts.googleapis.com/css2?family=Quicksand:wght@400;500;600;700&display=swap');
 
-html, body, [class*="css"] {
-    font-family: 'Quicksand', sans-serif;
+
+/* ============================================================
+   COLORES
+   ============================================================ */
+
+:root {
+    --rosa: #EFA7B5;
+    --rosa-claro: #FBE3E8;
+    --rosa-suave: #FFF3F5;
+
+    --verde: #8EAF91;
+    --verde-claro: #E5F0E5;
+    --verde-suave: #F3F8F2;
+
+    --crema: #FFFDFC;
+
+    --texto: #3F4540;
+    --gris: #737873;
+
+    --borde-rosa: #F0C8D0;
+    --borde-verde: #C8DCC9;
 }
 
-/* Fondo general */
+
+/* ============================================================
+   FONDO GENERAL
+   ============================================================ */
+
 .stApp {
-    background: #FFF7FA;
+    background:
+        radial-gradient(
+            circle at 10% 10%,
+            #FBE3E8 0%,
+            transparent 25%
+        ),
+        radial-gradient(
+            circle at 90% 20%,
+            #E5F0E5 0%,
+            transparent 25%
+        ),
+        #FFFDFC;
+
+    font-family: 'Quicksand', sans-serif;
+    color: var(--texto);
 }
 
-/* Ocultar menú y footer */
-#MainMenu {
-    visibility: hidden;
+
+.block-container {
+    max-width: 1200px;
+    padding-top: 2rem;
+    padding-bottom: 3rem;
 }
 
-footer {
-    visibility: hidden;
-}
 
-/* ------------------------------
+/* ============================================================
    SIDEBAR
------------------------------- */
+   ============================================================ */
 
 section[data-testid="stSidebar"] {
-    background: linear-gradient(
-        180deg,
-        #F8C8D8 0%,
-        #FCE3EB 100%
-    );
+    background:
+        linear-gradient(
+            180deg,
+            #FBE3E8 0%,
+            #F5E9EA 45%,
+            #E5F0E5 100%
+        );
+
+    border-right: 3px solid #E7C7CE;
 }
 
-section[data-testid="stSidebar"] * {
-    color: #4A2632 !important;
+
+/* TODOS LOS TEXTOS DEL SIDEBAR */
+
+section[data-testid="stSidebar"] *,
+section[data-testid="stSidebar"] p,
+section[data-testid="stSidebar"] span,
+section[data-testid="stSidebar"] label,
+section[data-testid="stSidebar"] h1,
+section[data-testid="stSidebar"] h2,
+section[data-testid="stSidebar"] h3,
+section[data-testid="stSidebar"] h4,
+section[data-testid="stSidebar"] [data-testid="stMarkdownContainer"] * {
+    color: #303530 !important;
 }
 
+
+section[data-testid="stSidebar"] h1,
 section[data-testid="stSidebar"] h2,
 section[data-testid="stSidebar"] h3 {
-    font-weight: 700;
-}
-
-/* ------------------------------
-   TÍTULO PRINCIPAL
------------------------------- */
-
-.main-title {
-    text-align: center;
-    color: #B84C70;
-    font-size: 42px;
-    font-weight: 700;
-    margin-top: 10px;
-    margin-bottom: 10px;
-}
-
-.subtitle {
-    text-align: center;
-    color: #79515E;
-    font-size: 18px;
-    margin-bottom: 35px;
-}
-
-/* ------------------------------
-   TÍTULOS DE PROYECTOS
------------------------------- */
-
-h2, h3 {
-    color: #B84C70 !important;
+    font-family: 'Quicksand', sans-serif !important;
     font-weight: 700 !important;
 }
 
-/* ------------------------------
-   TEXTO
------------------------------- */
 
-p {
-    color: #59444C;
-    font-size: 15px;
-    line-height: 1.6;
+/* ============================================================
+   TÍTULOS
+   ============================================================ */
+
+h1,
+h2,
+h3,
+h4 {
+    font-family: 'Quicksand', sans-serif !important;
+    color: #3F4540 !important;
 }
 
-/* ------------------------------
-   IMÁGENES
------------------------------- */
 
-img {
-    border-radius: 18px;
-}
-
-/* ------------------------------
-   BOTONES / ENLACES
------------------------------- */
-
-a {
-    color: #B84C70 !important;
+.main-title {
+    text-align: center;
+    font-size: 3.7rem;
     font-weight: 700;
-    text-decoration: none;
+
+    color: #B96F80;
+
+    margin-bottom: 0.2rem;
 }
 
-a:hover {
-    color: #8F3858 !important;
-    text-decoration: underline;
+
+.main-subtitle {
+    text-align: center;
+    font-size: 1.25rem;
+    font-weight: 500;
+
+    color: #6E786F;
+
+    margin-bottom: 2rem;
 }
 
-/* ------------------------------
+
+/* ============================================================
    TARJETAS
------------------------------- */
+   ============================================================ */
 
-.project-card {
+.card {
+    background: rgba(255,255,255,0.92);
+
+    border-radius: 25px;
+
+    padding: 1.8rem;
+
+    border: 2px solid #F0DADF;
+
+    box-shadow:
+        0 10px 30px rgba(80, 70, 70, 0.08);
+
+    margin-bottom: 1.5rem;
+}
+
+
+.card-green {
+    background: #F5F9F4;
+
+    border: 2px solid #D5E4D5;
+
+    border-radius: 25px;
+
+    padding: 1.8rem;
+
+    box-shadow:
+        0 10px 30px rgba(80, 100, 80, 0.07);
+
+    margin-bottom: 1.5rem;
+}
+
+
+/* ============================================================
+   IMAGEN
+   ============================================================ */
+
+.image-box {
     background: #FFFFFF;
-    border: 2px solid #F3D5DF;
+
+    padding: 1rem;
+
+    border-radius: 25px;
+
+    border: 2px solid #F0DADF;
+
+    box-shadow:
+        0 8px 25px rgba(80, 70, 70, 0.08);
+
+    margin-bottom: 2rem;
+}
+
+
+/* ============================================================
+   BOTÓN BOKEH
+   ============================================================ */
+
+.bk-btn {
+    border-radius: 18px !important;
+}
+
+
+/* ============================================================
+   BOTONES STREAMLIT
+   ============================================================ */
+
+.stButton > button {
+    background: linear-gradient(
+        135deg,
+        #D98E9F,
+        #BFA7A0
+    ) !important;
+
+    color: white !important;
+
+    border: none !important;
+
+    border-radius: 16px !important;
+
+    font-family: 'Quicksand', sans-serif !important;
+
+    font-size: 1.05rem !important;
+
+    font-weight: 700 !important;
+
+    padding: 0.7rem 1.5rem !important;
+
+    box-shadow:
+        0 5px 0 #B97888;
+
+    transition: 0.2s ease;
+}
+
+
+.stButton > button:hover {
+    transform: translateY(-2px);
+
+    box-shadow:
+        0 7px 0 #B97888;
+}
+
+
+.stButton > button:active {
+    transform: translateY(3px);
+
+    box-shadow:
+        0 2px 0 #B97888;
+}
+
+
+/* ============================================================
+   SELECTBOX
+   ============================================================ */
+
+div[data-baseweb="select"] > div {
+    background: #FFFFFF !important;
+
+    border: 2px solid #D5E2D5 !important;
+
+    border-radius: 14px !important;
+
+    color: #3F4540 !important;
+}
+
+
+div[data-baseweb="select"] * {
+    color: #3F4540 !important;
+}
+
+
+/* ============================================================
+   CHECKBOX
+   ============================================================ */
+
+.stCheckbox label {
+    color: #4D554E !important;
+
+    font-weight: 600 !important;
+}
+
+
+/* ============================================================
+   AUDIO
+   ============================================================ */
+
+audio {
+    width: 100%;
+
+    border-radius: 15px;
+}
+
+
+/* ============================================================
+   TEXTO DE RESULTADO
+   ============================================================ */
+
+.output-text {
+    background: #FFF7F8;
+
+    border-left: 5px solid #D98E9F;
+
+    border-radius: 15px;
+
+    padding: 1.2rem;
+
+    color: #4A4F4B;
+
+    margin-top: 1rem;
+}
+
+
+/* ============================================================
+   ETIQUETAS
+   ============================================================ */
+
+.section-label {
+    display: inline-block;
+
+    background: #E5F0E5;
+
+    color: #617563;
+
+    padding: 0.4rem 0.9rem;
+
     border-radius: 20px;
-    padding: 18px;
-    margin-bottom: 25px;
-    box-shadow: 0px 5px 15px rgba(184, 76, 112, 0.08);
-    transition: 0.3s ease;
+
+    font-size: 0.9rem;
+
+    font-weight: 700;
+
+    margin-bottom: 0.7rem;
 }
 
-.project-card:hover {
-    transform: translateY(-4px);
-    box-shadow: 0px 8px 20px rgba(184, 76, 112, 0.15);
-}
 
-/* ------------------------------
-   SEPARADOR
------------------------------- */
+/* ============================================================
+   DIVISORES
+   ============================================================ */
 
 hr {
     border: none;
-    height: 2px;
-    background: #F2CBD8;
-    margin: 25px 0;
+
+    border-top: 2px dashed #E5D5D8;
+
+    margin: 2rem 0;
+}
+
+
+/* ============================================================
+   MENSAJES
+   ============================================================ */
+
+div[data-testid="stAlert"] {
+    border-radius: 16px;
+}
+
+
+/* ============================================================
+   RESPONSIVE
+   ============================================================ */
+
+@media (max-width: 768px) {
+
+    .main-title {
+        font-size: 2.6rem;
+    }
+
+    .main-subtitle {
+        font-size: 1rem;
+    }
+
+    .card,
+    .card-green {
+        padding: 1.2rem;
+    }
+
 }
 
 </style>
 """, unsafe_allow_html=True)
 
 
-# ---------------------------------------------------------
-# CONFETI AUTOMÁTICO
-# ---------------------------------------------------------
+# ============================================================
+# CARPETA TEMPORAL
+# ============================================================
 
-# Cada vez que Streamlit recarga la página se vuelve a generar.
-confettis = [
-    "🎀", "🌸", "💗", "✨", "🌷",
-    "💕", "🎀", "🌸", "💖", "✨",
-    "🌺", "💗", "🎀", "🌷", "💕",
-    "✨", "🌸", "💞", "🎀", "🌺",
-    "💗", "✨", "🌷", "💕", "🎀",
-    "🌸", "💖", "✨", "🌺", "💗",
-    "🎀", "🌷", "💕", "🌸", "✨",
-    "💞", "🎀", "🌺", "💗", "🌷",
-    "✨", "💕", "🌸", "🎀", "💖",
-    "🌷", "✨", "💗", "🌺", "🎀"
-]
-
-confetti_html = ""
-
-for i, emoji in enumerate(confettis):
-
-    left = random.randint(0, 98)
-    size = random.randint(18, 30)
-    duration = random.uniform(3.5, 6.5)
-    delay = random.uniform(0, 1.8)
-    rotation = random.randint(360, 900)
-
-    confetti_html += f"""
-    <span class="confetti-piece"
-        style="
-            left: {left}%;
-            font-size: {size}px;
-            animation-duration: {duration}s;
-            animation-delay: {delay}s;
-            --rotation: {rotation}deg;
-        ">
-        {emoji}
-    </span>
-    """
-
-st.markdown(f"""
-<style>
-
-.confetti-container {{
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100vw;
-    height: 100vh;
-    pointer-events: none;
-    overflow: hidden;
-    z-index: 999999;
-}}
-
-.confetti-piece {{
-    position: fixed;
-    top: -50px;
-    opacity: 0;
-    animation-name: caerConfetti;
-    animation-timing-function: ease-in;
-    animation-fill-mode: forwards;
-    pointer-events: none;
-}}
-
-@keyframes caerConfetti {{
-
-    0% {{
-        transform: translateY(-50px) rotate(0deg);
-        opacity: 0;
-    }}
-
-    10% {{
-        opacity: 1;
-    }}
-
-    100% {{
-        transform: translateY(110vh) rotate(var(--rotation));
-        opacity: 0;
-    }}
-}}
-
-</style>
-
-<div class="confetti-container">
-    {confetti_html}
-</div>
-""", unsafe_allow_html=True)
+os.makedirs("temp", exist_ok=True)
 
 
-# ---------------------------------------------------------
-# FUNCIÓN PARA MOSTRAR IMÁGENES
-# ---------------------------------------------------------
-
-def mostrar_imagen(nombre, ancho=200):
-
-    if os.path.exists(nombre):
-
-        image = Image.open(nombre)
-
-        st.image(
-            image,
-            width=ancho
-        )
-
-    else:
-
-        st.warning(
-            f"⚠️ No se encontró la imagen: {nombre}"
-        )
-
-
-# ---------------------------------------------------------
+# ============================================================
 # SIDEBAR
-# ---------------------------------------------------------
+# ============================================================
 
 with st.sidebar:
 
-    st.subheader("🎀 Salomé Arango")
+    st.title("🌸 Traductorcito")
 
     st.write(
-        "A continuación encontrarán las páginas "
-        "que he realizado durante las clases."
+        "Habla, elige los idiomas y deja que Traductorcito "
+        "haga la magia. 🌿"
     )
 
-    st.markdown("---")
+    st.divider()
 
-    st.write("💗 Portafolio de Interfaces Multimodales")
+    st.subheader("🎙️ ¿Cómo funciona?")
+
+    st.write(
+        "1. Presiona **Escuchar**."
+    )
+
+    st.write(
+        "2. Cuando escuches la señal, habla."
+    )
+
+    st.write(
+        "3. Selecciona el idioma de entrada."
+    )
+
+    st.write(
+        "4. Selecciona el idioma de salida."
+    )
+
+    st.write(
+        "5. Presiona **Convertir**."
+    )
 
 
-# ---------------------------------------------------------
-# TÍTULO PRINCIPAL
-# ---------------------------------------------------------
+# ============================================================
+# ENCABEZADO
+# ============================================================
 
 st.markdown(
-    '<div class="main-title">🎀 Portafolio de Interfaces Multimodales</div>',
+    '<div class="main-title">'
+    '🌸 TRADUCTORCITO'
+    '</div>',
+    unsafe_allow_html=True
+)
+
+
+st.markdown(
+    '<div class="main-subtitle">'
+    'Escucho lo que quieres traducir 🌿'
+    '</div>',
+    unsafe_allow_html=True
+)
+
+
+# ============================================================
+# IMAGEN
+# ============================================================
+
+try:
+
+    image = Image.open("duolingo.png")
+
+    st.markdown(
+        '<div class="image-box">',
+        unsafe_allow_html=True
+    )
+
+    col1, col2, col3 = st.columns(
+        [1, 2, 1]
+    )
+
+    with col2:
+
+        st.image(
+            image,
+            use_container_width=True
+        )
+
+    st.markdown(
+        '</div>',
+        unsafe_allow_html=True
+    )
+
+except FileNotFoundError:
+
+    st.warning(
+        "No se encontró la imagen 'duolingo.png'."
+    )
+
+
+# ============================================================
+# INSTRUCCIÓN
+# ============================================================
+
+st.markdown(
+    '<div class="card">',
     unsafe_allow_html=True
 )
 
 st.markdown(
-    '<div class="subtitle">Una colección de proyectos desarrollados durante las clases ✨</div>',
+    '<div class="section-label">'
+    '🎤 Reconocimiento de voz'
+    '</div>',
     unsafe_allow_html=True
 )
 
-
-# ---------------------------------------------------------
-# COLUMNAS
-# ---------------------------------------------------------
-
-col1, col2, col3 = st.columns(3)
-
-
-# =========================================================
-# COLUMNA 1
-# =========================================================
-
-with col1:
-
-    # -----------------------------
-    # ANÁLISIS DE TEXTO
-    # -----------------------------
-
-    st.subheader("Análisis de texto")
-
-    mostrar_imagen(
-        "analisisdetexto.webp",
-        190
-    )
-
-    st.write(
-        "Con la siguiente página se realiza un análisis "
-        "del texto que se le ingrese."
-    )
-
-    url = "https://textico.streamlit.app/"
-
-    st.markdown(
-        f"📝 [Ver análisis de texto]({url})"
-    )
-
-
-    # -----------------------------
-    # RECONOCIMIENTO DE OBJETOS
-    # -----------------------------
-
-    st.subheader("Reconocimiento de objetos")
-
-    mostrar_imagen(
-        "imagenanime.jfif",
-        200
-    )
-
-    st.write(
-        "En el siguiente enlace veremos cómo se detectan "
-        "objetos en imágenes."
-    )
-
-    url = "https://detector-de-imagenes-3.streamlit.app/"
-
-    st.markdown(
-        f"🔎 [Ver reconocimiento de objetos]({url})"
-    )
-
-
-    # -----------------------------
-    # PRIMERA PÁGINA
-    # -----------------------------
-
-    st.subheader("Primera página")
-
-    mostrar_imagen(
-        "peachygoma.png",
-        200
-    )
-
-    st.write(
-        "En la siguiente página veremos el primer "
-        "acercamiento que tuve con GitHub y Streamlit."
-    )
-
-    url = "https://interfaces-multimodales1-primera-app.streamlit.app/"
-
-    st.markdown(
-        f"🌸 [Ver primera página]({url})"
-    )
-
-
-    # -----------------------------
-    # TRADUCTOR DE CARTELES
-    # -----------------------------
-
-    st.subheader("Traductor de carteles")
-
-    mostrar_imagen(
-        "chibipaises.jfif",
-        200
-    )
-
-    st.write(
-        "La siguiente página es un traductor de imágenes, "
-        "perfecto por si eres extranjero en un país con otro idioma."
-    )
-
-    url = "https://interfaces-multimodales1-primera-app.streamlit.app/"
-
-    st.markdown(
-        f"🌎 [Ver traductor de carteles]({url})"
-    )
-
-
-# =========================================================
-# COLUMNA 2
-# =========================================================
-
-with col2:
-
-    # -----------------------------
-    # OCR
-    # -----------------------------
-
-    st.subheader("Reconocimiento óptico de caracteres")
-
-    mostrar_imagen(
-        "ocr.webp",
-        200
-    )
-
-    st.write(
-        "En la siguiente página veremos una aplicación "
-        "que convierte los textos de imágenes a texto."
-    )
-
-    url = "https://lectorimagenes-salito.streamlit.app/"
-
-    st.markdown(
-        f"📖 [Ver OCR]({url})"
-    )
-
-
-    # -----------------------------
-    # RECONOCIMIENTO DE IMÁGENES
-    # -----------------------------
-
-    st.subheader("Reconocimiento de imágenes")
-
-    mostrar_imagen(
-        "animetech.avif",
-        190
-    )
-
-    st.write(
-        "En el siguiente enlace veremos cómo se pueden "
-        "analizar imágenes usando agentes de Teachable Machine."
-    )
-
-    url = "https://modelo-detector-personas.streamlit.app/"
-
-    st.markdown(
-        f"🤖 [Ver reconocimiento de imágenes]({url})"
-    )
-
-
-    # -----------------------------
-    # NUBE DE PALABRAS
-    # -----------------------------
-
-    st.subheader("Nube de palabras")
-
-    mostrar_imagen(
-        "nubedepalabras.jpg",
-        200
-    )
-
-    st.write(
-        "En el siguiente enlace veremos cómo tomar un texto "
-        "y convertirlo en una nube de palabras."
-    )
-
-    url = "https://nubecitadepalabras.streamlit.app/"
-
-    st.markdown(
-        f"☁️ [Ver nube de palabras]({url})"
-    )
-
-
-# =========================================================
-# COLUMNA 3
-# =========================================================
-
-with col3:
-
-    # -----------------------------
-    # TEXTO A AUDIO
-    # -----------------------------
-
-    st.subheader("Texto a audio")
-
-    mostrar_imagen(
-        "fabula.jfif",
-        190
-    )
-
-    st.write(
-        "En la siguiente página veremos una aplicación "
-        "que convierte el texto en audio, con un enfoque "
-        "infantil para convertir cuentos."
-    )
-
-    url = "https://pagina2-experimento.streamlit.app/"
-
-    st.markdown(
-        f"🔊 [Ver cuentos]({url})"
-    )
-
-
-    # -----------------------------
-    # ANÁLISIS DE SENTIMIENTO
-    # -----------------------------
-
-    st.subheader("Análisis de sentimiento")
-
-    mostrar_imagen(
-        "emojis.avif",
-        200
-    )
-
-    st.write(
-        "La siguiente página analiza las emociones que "
-        "se ingresan, según la polaridad."
-    )
-
-    url = "https://sentimentalismo-gifs.streamlit.app/"
-
-    st.markdown(
-        f"💗 [Ver análisis de sentimiento]({url})"
-    )
-
-
-    # -----------------------------
-    # TRADUCTOR
-    # -----------------------------
-
-    st.subheader("Traductor")
-
-    mostrar_imagen(
-        "duolingo.png",
-        200
-    )
-
-    st.write(
-        "Esta página traduce el audio que se le ingrese."
-    )
-
-    url = "https://traductorcito-de-idiomas.streamlit.app/"
-
-    st.markdown(
-        f"🌐 [Ver Traductorcito]({url})"
-    )
-
-
-# ---------------------------------------------------------
-# FINAL
-# ---------------------------------------------------------
-
-st.markdown("---")
+st.subheader(
+    "Toca el botón y habla"
+)
+
+st.write(
+    "Presiona el botón y espera la señal. "
+    "Cuando esté escuchando, di la frase que quieres traducir."
+)
 
 st.markdown(
-    """
-    <div style="
-        text-align:center;
-        color:#B84C70;
-        font-size:16px;
-        font-weight:600;
-        padding:10px;
-    ">
-        🎀 Gracias por visitar mi portafolio 💗✨
-    </div>
-    """,
+    '</div>',
     unsafe_allow_html=True
 )
+
+
+# ============================================================
+# BOTÓN DE RECONOCIMIENTO DE VOZ
+# ============================================================
+
+stt_button = Button(
+    label="🎤  Escuchar",
+    width=300,
+    height=50
+)
+
+
+stt_button.js_on_event(
+    "button_click",
+    CustomJS(code="""
+
+        var recognition = new webkitSpeechRecognition();
+
+        recognition.continuous = false;
+
+        recognition.interimResults = true;
+
+        recognition.lang = 'es-ES';
+
+
+        recognition.onresult = function (e) {
+
+            var value = "";
+
+            for (
+                var i = e.resultIndex;
+                i < e.results.length;
+                ++i
+            ) {
+
+                if (e.results[i].isFinal) {
+
+                    value += e.results[i][0].transcript;
+
+                }
+
+            }
+
+
+            if (value != "") {
+
+                document.dispatchEvent(
+                    new CustomEvent(
+                        "GET_TEXT",
+                        {
+                            detail: value
+                        }
+                    )
+                );
+
+            }
+
+        };
+
+
+        recognition.onend = function() {
+
+            console.log(
+                "Reconocimiento detenido"
+            );
+
+        };
+
+
+        recognition.start();
+
+    """)
+)
+
+
+# ============================================================
+# RESULTADO DEL RECONOCIMIENTO
+# ============================================================
+
+result = streamlit_bokeh_events(
+    stt_button,
+
+    events="GET_TEXT",
+
+    key="listen",
+
+    refresh_on_update=False,
+
+    override_height=75,
+
+    debounce_time=0
+)
+
+
+# ============================================================
+# PROCESAR TEXTO
+# ============================================================
+
+if result:
+
+    if "GET_TEXT" in result:
+
+        text = str(
+            result.get("GET_TEXT")
+        )
+
+        # ====================================================
+        # TEXTO DETECTADO
+        # ====================================================
+
+        st.markdown(
+            '<div class="card-green">',
+            unsafe_allow_html=True
+        )
+
+        st.markdown(
+            '<div class="section-label">'
+            '💬 Texto detectado'
+            '</div>',
+            unsafe_allow_html=True
+        )
+
+        st.write(
+            text
+        )
+
+        st.markdown(
+            '</div>',
+            unsafe_allow_html=True
+        )
+
+
+        # ====================================================
+        # TRADUCTOR
+        # ====================================================
+
+        translator = Translator()
+
+
+        st.markdown(
+            '<div class="card">',
+            unsafe_allow_html=True
+        )
+
+        st.markdown(
+            '<div class="section-label">'
+            '🌎 Configuración'
+            '</div>',
+            unsafe_allow_html=True
+        )
+
+
+        st.subheader(
+            "Elige los idiomas"
+        )
+
+
+        # ====================================================
+        # IDIOMA DE ENTRADA
+        # ====================================================
+
+        in_lang = st.selectbox(
+
+            "Idioma de entrada",
+
+            (
+                "Inglés",
+                "Español",
+                "Bengali",
+                "Coreano",
+                "Mandarín",
+                "Japonés"
+            )
+
+        )
+
+
+        if in_lang == "Inglés":
+
+            input_language = "en"
+
+        elif in_lang == "Español":
+
+            input_language = "es"
+
+        elif in_lang == "Bengali":
+
+            input_language = "bn"
+
+        elif in_lang == "Coreano":
+
+            input_language = "ko"
+
+        elif in_lang == "Mandarín":
+
+            input_language = "zh-cn"
+
+        elif in_lang == "Japonés":
+
+            input_language = "ja"
+
+
+        # ====================================================
+        # IDIOMA DE SALIDA
+        # ====================================================
+
+        out_lang = st.selectbox(
+
+            "Idioma de salida",
+
+            (
+                "Inglés",
+                "Español",
+                "Bengali",
+                "Coreano",
+                "Mandarín",
+                "Japonés",
+                "Ruso"
+            )
+
+        )
+
+
+        if out_lang == "Inglés":
+
+            output_language = "en"
+
+        elif out_lang == "Español":
+
+            output_language = "es"
+
+        elif out_lang == "Bengali":
+
+            output_language = "bn"
+
+        elif out_lang == "Coreano":
+
+            output_language = "ko"
+
+        elif out_lang == "Mandarín":
+
+            output_language = "zh-cn"
+
+        elif out_lang == "Japonés":
+
+            output_language = "ja"
+
+        elif out_lang == "Ruso":
+
+            output_language = "ru"
+
+
+        # ====================================================
+        # ACENTO
+        # ====================================================
+
+        english_accent = st.selectbox(
+
+            "Acento",
+
+            (
+                "Defecto",
+                "Español",
+                "Reino Unido",
+                "Estados Unidos",
+                "Canada",
+                "Australia",
+                "Irlanda",
+                "Sudáfrica"
+            )
+
+        )
+
+
+        if english_accent == "Defecto":
+
+            tld = "com"
+
+        elif english_accent == "Español":
+
+            tld = "com.mx"
+
+        elif english_accent == "Reino Unido":
+
+            tld = "co.uk"
+
+        elif english_accent == "Estados Unidos":
+
+            tld = "com"
+
+        elif english_accent == "Canada":
+
+            tld = "ca"
+
+        elif english_accent == "Australia":
+
+            tld = "com.au"
+
+        elif english_accent == "Irlanda":
+
+            tld = "ie"
+
+        elif english_accent == "Sudáfrica":
+
+            tld = "co.za"
+
+
+        st.markdown(
+            '</div>',
+            unsafe_allow_html=True
+        )
+
+
+        # ====================================================
+        # FUNCIÓN TEXT TO SPEECH
+        # ====================================================
+
+        def text_to_speech(
+            input_language,
+            output_language,
+            text,
+            tld
+        ):
+
+            translation = translator.translate(
+                text,
+                src=input_language,
+                dest=output_language
+            )
+
+            trans_text = translation.text
+
+
+            tts = gTTS(
+                trans_text,
+                lang=output_language,
+                tld=tld,
+                slow=False
+            )
+
+
+            try:
+
+                my_file_name = text[0:20]
+
+            except:
+
+                my_file_name = "audio"
+
+
+            # Evitar caracteres problemáticos
+            my_file_name = "".join(
+                c for c in my_file_name
+                if c.isalnum() or c in (" ", "_", "-")
+            )
+
+
+            if not my_file_name:
+
+                my_file_name = "audio"
+
+
+            archivo = (
+                f"temp/{my_file_name}.mp3"
+            )
+
+
+            tts.save(archivo)
+
+
+            return my_file_name, trans_text
+
+
+        # ====================================================
+        # MOSTRAR TEXTO
+        # ====================================================
+
+        display_output_text = st.checkbox(
+            "Mostrar el texto traducido"
+        )
+
+
+        # ====================================================
+        # BOTÓN CONVERTIR
+        # ====================================================
+
+        st.markdown(
+            '<div style="margin-top: 1rem;">',
+            unsafe_allow_html=True
+        )
+
+
+        if st.button(
+            "🌿 Convertir",
+            use_container_width=True
+        ):
+
+            try:
+
+                with st.spinner(
+                    "🌸 Preparando tu traducción..."
+                ):
+
+                    result_name, output_text = (
+                        text_to_speech(
+                            input_language,
+                            output_language,
+                            text,
+                            tld
+                        )
+                    )
+
+
+                # ============================================
+                # AUDIO
+                # ============================================
+
+                audio_path = (
+                    f"temp/{result_name}.mp3"
+                )
+
+
+                with open(
+                    audio_path,
+                    "rb"
+                ) as audio_file:
+
+                    audio_bytes = audio_file.read()
+
+
+                st.success(
+                    "✨ ¡Traducción lista!"
+                )
+
+
+                st.markdown(
+                    '<div class="card-green">',
+                    unsafe_allow_html=True
+                )
+
+
+                st.subheader(
+                    "🎧 Tu audio"
+                )
+
+
+                st.audio(
+                    audio_bytes,
+                    format="audio/mp3",
+                    start_time=0
+                )
+
+
+                st.markdown(
+                    '</div>',
+                    unsafe_allow_html=True
+                )
+
+
+                # ============================================
+                # TEXTO DE SALIDA
+                # ============================================
+
+                if display_output_text:
+
+                    st.markdown(
+                        '<div class="output-text">',
+                        unsafe_allow_html=True
+                    )
+
+
+                    st.subheader(
+                        "💬 Texto traducido"
+                    )
+
+
+                    st.write(
+                        output_text
+                    )
+
+
+                    st.markdown(
+                        '</div>',
+                        unsafe_allow_html=True
+                    )
+
+
+            except Exception as e:
+
+                st.error(
+                    f"😿 No fue posible realizar la traducción: {e}"
+                )
+
+
+        st.markdown(
+            '</div>',
+            unsafe_allow_html=True
+        )
+
+
+# ============================================================
+# LIMPIAR ARCHIVOS ANTIGUOS
+# ============================================================
+
+def remove_files(days):
+
+    mp3_files = glob.glob(
+        "temp/*mp3"
+    )
+
+
+    if len(mp3_files) != 0:
+
+        now = time.time()
+
+        seconds = days * 86400
+
+
+        for f in mp3_files:
+
+            try:
+
+                if os.stat(f).st_mtime < (
+                    now - seconds
+                ):
+
+                    os.remove(f)
+
+            except:
+
+                pass
+
+
+remove_files(7)
